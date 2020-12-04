@@ -105,7 +105,7 @@ class List {
    */
   render() {
     this._elements.wrapper = this.makeMainTag(this._data.style);
-
+    console.log('reached render start')
     // fill with data
     if (this._data.items.length) {
       this._data.items.forEach((item) => {
@@ -119,6 +119,7 @@ class List {
 
     if (!this.readOnly) {
       // detect keydown on the last item to escape List
+      console.log('reached listener assignment');
       this._elements.wrapper.addEventListener('keydown', (event) => {
         const [ENTER, BACKSPACE] = [13, 8]; // key codes
 
@@ -204,6 +205,7 @@ class List {
       });
 
       itemEl.addEventListener('click', () => {
+        console.log('cllllii')
         this.toggleTune(item.name);
 
         // clear other buttons
@@ -275,15 +277,55 @@ class List {
    * @param {string} style - 'ordered'|'unordered'
    */
   toggleTune(style) {
+    console.log('calllleed', style);
     const newTag = this.makeMainTag(style);
 
     while (this._elements.wrapper.hasChildNodes()) {
       newTag.appendChild(this._elements.wrapper.firstChild);
     }
 
+
     this._elements.wrapper.replaceWith(newTag);
     this._elements.wrapper = newTag;
     this._data.style = style;
+
+    this._elements.wrapper.addEventListener('keydown', (event) => {
+      console.log('got it');
+      const [ENTER, BACKSPACE] = [13, 8]; // key codes
+
+      switch (event.keyCode) {
+        case ENTER:
+          this.getOutofList(event);
+          break;
+        case BACKSPACE:
+          this.backspace(event);
+          break;
+      }
+    }, false);
+  }
+
+  /**
+   * Update Listeners on tuned List
+   *
+   */
+
+  updateListeners (){
+    if (!this.readOnly) {
+      // detect keydown on the last item to escape List
+      console.log('reached listener assignment');
+      this._elements.wrapper.addEventListener('keydown', (event) => {
+        const [ENTER, BACKSPACE] = [13, 8]; // key codes
+
+        switch (event.keyCode) {
+          case ENTER:
+            this.getOutofList(event);
+            break;
+          case BACKSPACE:
+            this.backspace(event);
+            break;
+        }
+      }, false);
+    }
   }
 
   /**
@@ -392,7 +434,7 @@ class List {
    */
   getOutofList(event) {
     const items = this._elements.wrapper.querySelectorAll('.' + this.CSS.item);
-
+    console.log('reached here', items);
     /**
      * Save the last one.
      */
@@ -400,16 +442,42 @@ class List {
       return;
     }
 
+
     const lastItem = items[items.length - 1];
+    const firstItem = items[0];
     const currentItem = this.currentItem;
+
+
+    console.log(currentItem);
+    console.log(this.api.blocks);
 
     /** Prevent Default li generation if item is empty */
     if (currentItem === lastItem && !lastItem.textContent.trim().length) {
+      //currentItem.innerHTML.replace('<br>', ' ').trim()
       /** Insert New Block and set caret */
+      console.log('1', currentItem.parentElement)
+      console.log('2', currentItem.parentNode)
+
       currentItem.parentElement.removeChild(currentItem);
+      console.log('3', this._elements.wrapper)
+      console.log('4', this.api.blocks)
+
+      this.toggleTune(this._data.style)
+
+
       this.api.blocks.insert(undefined, undefined, undefined, undefined, true);
+      this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
       event.preventDefault();
       event.stopPropagation();
+    }else if(currentItem === firstItem && !firstItem.textContent.trim().length){
+      //currentItem.parentElement.removeChild(currentItem);
+      this.api.blocks.insert(undefined, undefined, undefined, undefined, true);
+      this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
+      this.api.blocks.move(this.api.blocks.getCurrentBlockIndex() - 1, this.api.blocks.getCurrentBlockIndex());
+
+      event.preventDefault();
+      event.stopPropagation();
+      console.log('add one abovre');
     }
   }
 
@@ -421,16 +489,17 @@ class List {
   backspace(event) {
     const items = this._elements.wrapper.querySelectorAll('.' + this.CSS.item),
         firstItem = items[0];
-
+    console.log('reached 1')
     if (!firstItem) {
       return;
     }
-
+    console.log('reached 2')
     /**
      * Save the last one.
      */
     if (items.length < 2 && !firstItem.innerHTML.replace('<br>', ' ').trim()) {
       event.preventDefault();
+      console.log('reached 3')
     }
   }
 
@@ -440,8 +509,8 @@ class List {
    * @param {KeyboardEvent} event
    */
   selectItem(event) {
+    console.log('hit this')
     event.preventDefault();
-
     const selection = window.getSelection(),
         currentNode = selection.anchorNode.parentNode,
         currentItem = currentNode.closest('.' + this.CSS.item),
