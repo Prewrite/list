@@ -281,8 +281,6 @@ class List {
         newTag.appendChild(this._elements.wrapper.firstChild);
     }
 
-    this.data = this._data
-
     this._elements.wrapper.replaceWith(newTag);
     this._elements.wrapper = newTag;
     this._data.style = style;
@@ -301,11 +299,6 @@ class List {
       }
     }, false);
   }
-
-  /**
-   * Update Listeners on tuned List
-   *
-   */
 
   /**
    * Styles
@@ -397,7 +390,7 @@ class List {
    */
   get currentItem() {
     let currentNode = window.getSelection().anchorNode;
-
+    console.log(currentNode.nodeType)
     if (currentNode.nodeType !== Node.ELEMENT_NODE) {
       currentNode = currentNode.parentNode;
     }
@@ -421,7 +414,6 @@ class List {
       return;
     }
 
-
     const lastItem = items[items.length - 1];
     const firstItem = items[0];
     const currentItem = this.currentItem;
@@ -431,18 +423,16 @@ class List {
 
       /** Insert New Block and set caret */
       currentItem.parentElement.removeChild(currentItem);
-      this.toggleTune(this._data.style)
       this.api.blocks.insert(undefined, undefined, undefined, undefined, true);
       this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
       event.preventDefault();
       event.stopPropagation();
+
     }else if(currentItem === firstItem && !firstItem.textContent.trim().length){
       currentItem.parentElement.removeChild(currentItem);
-      this.toggleTune(this._data.style)
       this.api.blocks.insert(undefined, undefined, undefined, undefined, true);
       this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
       this.api.blocks.move(this.api.blocks.getCurrentBlockIndex() - 1, this.api.blocks.getCurrentBlockIndex());
-
       event.preventDefault();
       event.stopPropagation();
     }

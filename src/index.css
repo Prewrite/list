@@ -2,10 +2,12 @@
     margin: 0;
     padding-left: 40px;
     outline: none;
+    white-space: pre-line;
 
     &__item {
         padding: 5.5px 0 5.5px 3px;
         line-height: 1.6em;
+        white-space: pre-line;
     }
 
     &--unordered {
