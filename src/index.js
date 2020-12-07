@@ -390,7 +390,6 @@ class List {
    */
   get currentItem() {
     let currentNode = window.getSelection().anchorNode;
-    console.log(currentNode.nodeType)
     if (currentNode.nodeType !== Node.ELEMENT_NODE) {
       currentNode = currentNode.parentNode;
     }
