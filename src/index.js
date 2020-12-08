@@ -421,9 +421,19 @@ class List {
     if (currentItem === lastItem && !lastItem.textContent.trim().length) {
 
       /** Insert New Block and set caret */
-      currentItem.parentElement.removeChild(currentItem);
-      this.api.blocks.insert(undefined, undefined, undefined, undefined, true);
-      this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
+      //currentItem.parentElement.removeChild(currentItem);
+      //currentItem.setAttribute('data-remove', "test")
+      let parentEl = currentItem.parentElement
+      currentItem.parentElement.setAttribute('style', 'margin-bottom: 36px;')
+      currentItem.parentElement.removeChild(currentItem.parentElement.lastElementChild);
+
+      setTimeout(() =>{
+
+        this.api.blocks.insert();
+        this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
+        parentEl.setAttribute('style', 'margin-bottom: 0px;')
+      }, 200)
+
       event.preventDefault();
       event.stopPropagation();
 
