@@ -421,27 +421,35 @@ class List {
     if (currentItem === lastItem && !lastItem.textContent.trim().length) {
 
       /** Insert New Block and set caret */
-      //currentItem.parentElement.removeChild(currentItem);
-      //currentItem.setAttribute('data-remove', "test")
+
+      let currentItemHeight = currentItem.offsetHeight + "px";
       let parentEl = currentItem.parentElement
-      currentItem.parentElement.setAttribute('style', 'margin-bottom: 36px;')
-      currentItem.parentElement.removeChild(currentItem.parentElement.lastElementChild);
+      currentItem.parentElement.setAttribute('style', 'margin-bottom:' + currentItemHeight)
+      currentItem.parentElement.removeChild(currentItem);
 
       setTimeout(() =>{
-
         this.api.blocks.insert();
         this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
-        parentEl.setAttribute('style', 'margin-bottom: 0px;')
-      }, 200)
+        parentEl.removeAttribute('style');
+      }, 1)
 
       event.preventDefault();
       event.stopPropagation();
 
     }else if(currentItem === firstItem && !firstItem.textContent.trim().length){
+
+      let currentItemHeight = currentItem.offsetHeight + "px";
+      let parentEl = currentItem.parentElement
+      currentItem.parentElement.setAttribute('style', 'margin-top:' + currentItemHeight)
       currentItem.parentElement.removeChild(currentItem);
-      this.api.blocks.insert(undefined, undefined, undefined, undefined, true);
-      this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
-      this.api.blocks.move(this.api.blocks.getCurrentBlockIndex() - 1, this.api.blocks.getCurrentBlockIndex());
+
+      setTimeout(() =>{
+        this.api.blocks.insert(undefined, undefined, undefined, undefined, true);
+        this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
+        this.api.blocks.move(this.api.blocks.getCurrentBlockIndex() - 1, this.api.blocks.getCurrentBlockIndex());
+        parentEl.removeAttribute('style');
+      }, 1)
+
       event.preventDefault();
       event.stopPropagation();
     }
