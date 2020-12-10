@@ -118,21 +118,24 @@ class List {
 
     if (!this.readOnly) {
       // detect keydown on the last item to escape List
-      this._elements.wrapper.addEventListener('keydown', (event) => {
-        const [ENTER, BACKSPACE] = [13, 8]; // key codes
-
-        switch (event.keyCode) {
-          case ENTER:
-            this.getOutofList(event);
-            break;
-          case BACKSPACE:
-            this.backspace(event);
-            break;
-        }
-      }, false);
+      this._elements.wrapper.addEventListener('keydown', this.onKeyDown.bind(this), false);
     }
 
     return this._elements.wrapper;
+  }
+
+  onKeyDown (event) {
+
+      const [ENTER, BACKSPACE] = [13, 8]; // key codes
+
+      switch (event.keyCode) {
+        case ENTER:
+          this.getOutofList(event);
+          break;
+        case BACKSPACE:
+          this.backspace(event);
+          break;
+      }
   }
 
   /**
@@ -285,19 +288,7 @@ class List {
     this._elements.wrapper = newTag;
     this._data.style = style;
 
-    this._elements.wrapper.addEventListener('keydown', (event) => {
-
-      const [ENTER, BACKSPACE] = [13, 8]; // key codes
-
-      switch (event.keyCode) {
-        case ENTER:
-          this.getOutofList(event);
-          break;
-        case BACKSPACE:
-          this.backspace(event);
-          break;
-      }
-    }, false);
+    this._elements.wrapper.addEventListener('keydown', this.onKeyDown.bind(this), false);
   }
 
   /**
@@ -482,6 +473,7 @@ class List {
    *
    * @param {KeyboardEvent} event
    */
+
   selectItem(event) {
 
     event.preventDefault();
