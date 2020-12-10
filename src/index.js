@@ -413,6 +413,7 @@ class List {
       return;
     }
 
+    /** Store the first and last elements for convenience */
     const lastItem = items[items.length - 1];
     const firstItem = items[0];
     const currentItem = this.currentItem;
@@ -420,35 +421,25 @@ class List {
     /** Prevent Default li generation if item is empty */
     if (currentItem === lastItem && !lastItem.textContent.trim().length) {
 
+      currentItem.parentElement.removeChild(currentItem);
       /** Insert New Block and set caret */
 
-      let currentItemHeight = currentItem.offsetHeight + "px";
-      let parentEl = currentItem.parentElement
-      currentItem.parentElement.setAttribute('style', 'margin-bottom:' + currentItemHeight)
-      currentItem.parentElement.removeChild(currentItem);
-
-      setTimeout(() =>{
-        this.api.blocks.insert();
-        this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
-        parentEl.removeAttribute('style');
-      }, 1)
+      /** Inserting new block and setting focus to it */
+      this.api.blocks.insert();
+      this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
 
       event.preventDefault();
       event.stopPropagation();
 
+      /** Handling case where user hits enter on top LI item that is empty */
     }else if(currentItem === firstItem && !firstItem.textContent.trim().length){
 
-      let currentItemHeight = currentItem.offsetHeight + "px";
-      let parentEl = currentItem.parentElement
-      currentItem.parentElement.setAttribute('style', 'margin-top:' + currentItemHeight)
       currentItem.parentElement.removeChild(currentItem);
 
-      setTimeout(() =>{
-        this.api.blocks.insert(undefined, undefined, undefined, undefined, true);
-        this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
-        this.api.blocks.move(this.api.blocks.getCurrentBlockIndex() - 1, this.api.blocks.getCurrentBlockIndex());
-        parentEl.removeAttribute('style');
-      }, 1)
+      /** Inserting new block, setting focus to it and moving it above the list */
+      this.api.blocks.insert();
+      this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
+      this.api.blocks.move(this.api.blocks.getCurrentBlockIndex() - 1, this.api.blocks.getCurrentBlockIndex());
 
       event.preventDefault();
       event.stopPropagation();
@@ -469,20 +460,10 @@ class List {
       return;
     }
 
+    /** Removing top LI if it is empty before focusing on block above */
     if(currentItem === firstItem && !firstItem.textContent.trim().length){
 
-      let currentItemHeight = currentItem.offsetHeight + "px";
-      let parentEl = currentItem.parentElement
-      currentItem.parentElement.setAttribute('style', 'margin-top:' + currentItemHeight)
       currentItem.parentElement.removeChild(currentItem);
-
-      setTimeout(() =>{
-        this.api.blocks.insert(undefined, undefined, undefined, undefined, true);
-        this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
-        //this.api.blocks.move(this.api.blocks.getCurrentBlockIndex() - 1, this.api.blocks.getCurrentBlockIndex());
-        parentEl.removeAttribute('style');
-      }, 1)
-
       event.preventDefault();
       event.stopPropagation();
     }
