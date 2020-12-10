@@ -462,10 +462,29 @@ class List {
    */
   backspace(event) {
     const items = this._elements.wrapper.querySelectorAll('.' + this.CSS.item),
-        firstItem = items[0];
+        firstItem = items[0],
+        currentItem = this.currentItem;
 
     if (!firstItem) {
       return;
+    }
+
+    if(currentItem === firstItem && !firstItem.textContent.trim().length){
+
+      let currentItemHeight = currentItem.offsetHeight + "px";
+      let parentEl = currentItem.parentElement
+      currentItem.parentElement.setAttribute('style', 'margin-top:' + currentItemHeight)
+      currentItem.parentElement.removeChild(currentItem);
+
+      setTimeout(() =>{
+        this.api.blocks.insert(undefined, undefined, undefined, undefined, true);
+        this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
+        //this.api.blocks.move(this.api.blocks.getCurrentBlockIndex() - 1, this.api.blocks.getCurrentBlockIndex());
+        parentEl.removeAttribute('style');
+      }, 1)
+
+      event.preventDefault();
+      event.stopPropagation();
     }
 
     /**
