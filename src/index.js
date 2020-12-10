@@ -105,6 +105,7 @@ class List {
    */
   render() {
     this._elements.wrapper = this.makeMainTag(this._data.style);
+
     // fill with data
     if (this._data.items.length) {
       this._data.items.forEach((item) => {
@@ -122,20 +123,6 @@ class List {
     }
 
     return this._elements.wrapper;
-  }
-
-  onKeyDown (event) {
-
-      const [ENTER, BACKSPACE] = [13, 8]; // key codes
-
-      switch (event.keyCode) {
-        case ENTER:
-          this.getOutofList(event);
-          break;
-        case BACKSPACE:
-          this.backspace(event);
-          break;
-      }
   }
 
   /**
@@ -206,7 +193,6 @@ class List {
       });
 
       itemEl.addEventListener('click', () => {
-
         this.toggleTune(item.name);
 
         // clear other buttons
@@ -247,6 +233,23 @@ class List {
   }
 
   /**
+   * keydown event handler
+   */
+  onKeyDown (event) {
+
+    const [ENTER, BACKSPACE] = [13, 8]; // key codes
+
+    switch (event.keyCode) {
+      case ENTER:
+        this.getOutofList(event);
+        break;
+      case BACKSPACE:
+        this.backspace(event);
+        break;
+    }
+  }
+
+  /**
    * List Tool on paste configuration
    *
    * @public
@@ -281,7 +284,7 @@ class List {
     const newTag = this.makeMainTag(style);
 
     while (this._elements.wrapper.hasChildNodes()) {
-        newTag.appendChild(this._elements.wrapper.firstChild);
+      newTag.appendChild(this._elements.wrapper.firstChild);
     }
 
     this._elements.wrapper.replaceWith(newTag);
@@ -381,6 +384,7 @@ class List {
    */
   get currentItem() {
     let currentNode = window.getSelection().anchorNode;
+
     if (currentNode.nodeType !== Node.ELEMENT_NODE) {
       currentNode = currentNode.parentNode;
     }
@@ -453,7 +457,6 @@ class List {
 
     /** Removing top LI if it is empty before focusing on block above */
     if(currentItem === firstItem && !firstItem.textContent.trim().length){
-
       currentItem.parentElement.removeChild(currentItem);
       event.preventDefault();
       event.stopPropagation();
@@ -464,7 +467,6 @@ class List {
      */
     if (items.length < 2 && !firstItem.innerHTML.replace('<br>', ' ').trim()) {
       event.preventDefault();
-
     }
   }
 
