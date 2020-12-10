@@ -415,7 +415,6 @@ class List {
 
     /** Prevent Default li generation if item is empty */
     if (currentItem === lastItem && !lastItem.textContent.trim().length) {
-
       currentItem.parentElement.removeChild(currentItem);
       /** Insert New Block and set caret */
 
@@ -428,7 +427,6 @@ class List {
 
       /** Handling case where user hits enter on top LI item that is empty */
     }else if(currentItem === firstItem && !firstItem.textContent.trim().length){
-
       currentItem.parentElement.removeChild(currentItem);
 
       /** Inserting new block, setting focus to it and moving it above the list */
@@ -475,7 +473,6 @@ class List {
    *
    * @param {KeyboardEvent} event
    */
-
   selectItem(event) {
 
     event.preventDefault();
