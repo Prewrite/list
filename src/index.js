@@ -119,18 +119,7 @@ class List {
 
     if (!this.readOnly) {
       // detect keydown on the last item to escape List
-      this._elements.wrapper.addEventListener('keydown', (event) => {
-        const [ENTER, BACKSPACE] = [13, 8]; // key codes
-
-        switch (event.keyCode) {
-          case ENTER:
-            this.getOutofList(event);
-            break;
-          case BACKSPACE:
-            this.backspace(event);
-            break;
-        }
-      }, false);
+      this._elements.wrapper.addEventListener('keydown', this.onKeyDown.bind(this), false);
     }
 
     return this._elements.wrapper;
@@ -244,6 +233,23 @@ class List {
   }
 
   /**
+   * keydown event handler
+   */
+  onKeyDown (event) {
+
+    const [ENTER, BACKSPACE] = [13, 8]; // key codes
+
+    switch (event.keyCode) {
+      case ENTER:
+        this.getOutofList(event);
+        break;
+      case BACKSPACE:
+        this.backspace(event);
+        break;
+    }
+  }
+
+  /**
    * List Tool on paste configuration
    *
    * @public
@@ -284,6 +290,8 @@ class List {
     this._elements.wrapper.replaceWith(newTag);
     this._elements.wrapper = newTag;
     this._data.style = style;
+
+    this._elements.wrapper.addEventListener('keydown', this.onKeyDown.bind(this), false);
   }
 
   /**
@@ -400,14 +408,32 @@ class List {
       return;
     }
 
+    /** Store the first and last elements for convenience */
     const lastItem = items[items.length - 1];
+    const firstItem = items[0];
     const currentItem = this.currentItem;
 
     /** Prevent Default li generation if item is empty */
     if (currentItem === lastItem && !lastItem.textContent.trim().length) {
-      /** Insert New Block and set caret */
       currentItem.parentElement.removeChild(currentItem);
-      this.api.blocks.insert(undefined, undefined, undefined, undefined, true);
+      /** Insert New Block and set caret */
+
+      /** Inserting new block and setting focus to it */
+      this.api.blocks.insert();
+      this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      /** Handling case where user hits enter on top LI item that is empty */
+    }else if(currentItem === firstItem && !firstItem.textContent.trim().length){
+      currentItem.parentElement.removeChild(currentItem);
+
+      /** Inserting new block, setting focus to it and moving it above the list */
+      this.api.blocks.insert();
+      this.api.caret.setToBlock(this.api.blocks.getCurrentBlockIndex());
+      this.api.blocks.move(this.api.blocks.getCurrentBlockIndex() - 1, this.api.blocks.getCurrentBlockIndex());
+
       event.preventDefault();
       event.stopPropagation();
     }
@@ -420,10 +446,18 @@ class List {
    */
   backspace(event) {
     const items = this._elements.wrapper.querySelectorAll('.' + this.CSS.item),
-        firstItem = items[0];
+        firstItem = items[0],
+        currentItem = this.currentItem;
 
     if (!firstItem) {
       return;
+    }
+
+    /** Removing top LI if it is empty before focusing on block above */
+    if(currentItem === firstItem && !firstItem.textContent.trim().length){
+      currentItem.parentElement.removeChild(currentItem);
+      event.preventDefault();
+      event.stopPropagation();
     }
 
     /**
@@ -440,8 +474,8 @@ class List {
    * @param {KeyboardEvent} event
    */
   selectItem(event) {
-    event.preventDefault();
 
+    event.preventDefault();
     const selection = window.getSelection(),
         currentNode = selection.anchorNode.parentNode,
         currentItem = currentNode.closest('.' + this.CSS.item),
